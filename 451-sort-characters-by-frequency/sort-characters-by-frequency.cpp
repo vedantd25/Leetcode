@@ -1,23 +1,31 @@
 class Solution {
 public:
     string frequencySort(string s) {
-        unordered_map<char,int> freq;
-        vector<string> bucket(s.size()+1, "");
-        string res;
+        auto cmp = [](const pair<char, int>& a, const pair<char, int>& b) {
+            return a.second < b.second;
+        };
         
-        //count frequency of each character
-        for(char c:s) freq[c]++;
-        //put character into frequency bucket
-        for(auto& it:freq) {
-            int n = it.second;
-            char c = it.first;
-            bucket[n].append(n, c);
+        priority_queue<pair<char, int>, vector<pair<char, int>>, decltype(cmp)> pq(cmp);
+        
+        unordered_map<char, int> hm;
+        
+        for (char c : s) {
+            hm[c]++;
         }
-        //form descending sorted string
-        for(int i=s.size(); i>0; i--) {
-            if(!bucket[i].empty())
-                res.append(bucket[i]);
+        
+        for (const auto& entry : hm) {
+            pq.push(make_pair(entry.first, entry.second));
         }
-        return res;
+        
+        string result = "";
+        while (!pq.empty()) {
+            pair<char, int> p = pq.top();
+            pq.pop();
+            result.append(p.second, p.first);
+        }
+        
+        return result;
     }
 };
+
+
